@@ -1,24 +1,31 @@
-import serverless from "serverless-http";
+import serverlessExpress from "@vendia/serverless-express";
 import express from "express";
+import bodyParser from 'body-parser';
 
 const app = express();
+const router = express.Router();
 
-app.get("/", (_req, res, _next) => {
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+
+router.get("/", (_req, res, _next) => {
   return res.status(200).json({
     message: "Hello from root!",
   });
 });
 
-app.get("/hello", (_req, res, _next) => {
+router.get("/hello", (_req, res, _next) => {
   return res.status(200).json({
     message: "Hello from path!",
   });
 });
 
-app.use((_req, res, _next) => {
+router.use((_req, res, _next) => {
   return res.status(404).json({
     error: "Not Found",
   });
 });
 
-export const handler = serverless(app);
+app.use('/', router)
+
+export const handler = serverlessExpress({app});
